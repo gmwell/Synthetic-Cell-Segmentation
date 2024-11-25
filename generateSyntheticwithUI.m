@@ -57,7 +57,7 @@ function yeastImageUI()
         end
 
         % Generate synthetic images
-        [fluorescenceImage, labeledImage] = generateSyntheticImages(height, width, numCells, minRadius, maxRadius);
+        [fluorescenceImage, labeledImage, numLabeledCells] = generateSyntheticImages(height, width, numCells, minRadius, maxRadius);
 
         % Display images
         imshow(fluorescenceImage, [], 'Parent', ax1);
@@ -65,11 +65,16 @@ function yeastImageUI()
         colorbar(ax1);
 
         imshow(label2rgb(labeledImage, 'jet', 'k', 'shuffle'), 'Parent', ax2);
-        colorbar(ax2);
+        
+        % Update colorbar with labels
+        cmap = [0 0 0; jet(numLabeledCells)]; % Black for background, jet colormap for cells
+        colormap(ax2, cmap);
+        colorbar(ax2, 'Ticks', linspace(0, 1, numLabeledCells + 1), ...
+            'TickLabels', 0:numLabeledCells);
     end
 end
 
-function [fluorescenceImage, labeledImage] = generateSyntheticImages(height, width, numCells, minRadius, maxRadius)
+function [fluorescenceImage, labeledImage, numLabeledCells] = generateSyntheticImages(height, width, numCells, minRadius, maxRadius)
     % Initialize a blank fluorescence image
     fluorescenceImage = zeros(height, width, 'uint16');
 
@@ -77,6 +82,7 @@ function [fluorescenceImage, labeledImage] = generateSyntheticImages(height, wid
     centers = randi([minRadius, min(height, width) - maxRadius], numCells, 2);
     radii = randi([minRadius, maxRadius], numCells, 1);
 
+    
     % Draw cells with random intensities
     for i = 1:numCells
         [X, Y] = meshgrid(1:width, 1:height);
@@ -88,5 +94,6 @@ function [fluorescenceImage, labeledImage] = generateSyntheticImages(height, wid
     % Generate labeled image
     binaryImage = fluorescenceImage > 0;
     labeledImage = bwlabel(binaryImage); % Label connected components
+    numLabeledCells = max(labeledImage(:)); % Number of unique labels (excluding background)
     labeledImage = uint8(labeledImage); % Convert to uint8 (max label = 255)
 end
