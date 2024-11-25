@@ -54,7 +54,6 @@ Dependencies
 •	MATLAB (R2022 or later recommended)
 •	Image Processing Toolbox (for poly2mask and label2rgb)
 ________________________________________
-________________________________________
 
 References:
 1.	Gonzalez, R. C., & Woods, R. E. (2018). Digital Image Processing (4th Edition). Pearson.
